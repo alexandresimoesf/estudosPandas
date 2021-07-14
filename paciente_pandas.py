@@ -8,16 +8,16 @@ def nascimento(data):
     return '2020/01/01' if '_' in data else '{}{}{}{}-{}{}-{}{}'.format(*data)
 
 
-def sexo(indefinido):
-    return 'MASCULINO' if indefinido == 'M' else 'FEMININO'
-
-
 def profissao(servico):
     return 'Null' if servico == 'nan' else unidecode.unidecode(servico)
 
 
 def quote(informacao):
     return '\"' + informacao + '\"'
+
+
+def sexo(indefinido):
+    return 'MASCULINO' if indefinido == 'M' else 'FEMININO'
 
 
 pacientes = read_csv('PACIENTE_original.csv', sep=';', encoding='latin-1', low_memory=False)
@@ -55,4 +55,4 @@ q = ['nome', 'data_cadastro', 'CodMedico', 'sexo', 'cel', 'profissao', 'nascimen
 pacientes[q] = pacientes[q].astype(str).apply(quote)
 
 
-pacientes.to_csv('pacientes_dermacapelli.csv', encoding='UTF8', index=False)
+pacientes.to_csv('paciente_dermacapelli.csv', encoding='UTF8', index=False)
