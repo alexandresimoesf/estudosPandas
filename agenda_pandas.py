@@ -24,7 +24,7 @@ def sql_foreing_key(key):
 
 
 def sql_prontuario_fk(key):
-    return '(SELECT p.id from public.prontuario p where fk_paciente_id = {})'.format(key)
+    return '(id from public.paciente where paciente.id_paciente_dermacapelli = {})'.format(key)
 
 
 def quote(informacao):
@@ -82,15 +82,17 @@ agenda = agenda.rename(columns={'CodPaciente': 'id_paciente_dermacapelli',
 q = ['data_agendada', 'data_agendada_timestamp', 'horario', 'descricao', 'etiqueta', 'status_consulta', 'confirm_consulta', 'cod_saida', 'data_solicitacao', 'responsavel_recepcao']
 
 
-agenda_csv = agenda
-agenda_csv = agenda_csv.drop(['Atributo', 'id_paciente_dermacapelli', 'Historico'], axis=1)
-agenda_csv = agenda_csv.drop_duplicates(subset=['data_agendada'])
-agenda_csv[q] = agenda_csv[q].astype(str).apply(quote)
-agenda_csv.to_csv('agenda_dermacapelli.csv', encoding='UTF8', index=False)
+# agenda_csv = agenda
+# agenda_csv = agenda_csv.drop(['Atributo', 'id_paciente_dermacapelli', 'Historico'], axis=1)
+# agenda_csv = agenda_csv.drop_duplicates(subset=['data_agendada'])
+# agenda_csv[q] = agenda_csv[q].astype(str).apply(quote)
+# agenda_csv.to_csv('agenda_dermacapelli.csv', encoding='UTF8', index=False)
 #
 #
-# prontuario_csv = agenda
-# prontuario_csv = prontuario_csv.drop()
-# prontuario_csv = prontuario_csv.drop_duplicates()
-# prontuario_csv.to_csv()
+prontuario_csv = agenda['id_paciente_dermacapelli']
+prontuario_csv['datacriacao'] = 'SELECT now()'
+prontuario_csv = prontuario_csv.drop_duplicates(subset=['id_paciente_dermacapelli'])
+prontuario_csv.to_csv('prontuario_dermacappelli.csv', encoding='UTF8', index=False)
+
+
 # anamnese = agenda.groupby(['id_paciente_dermacapelli', 'data_agendada', 'fk_medico_id'], as_index=False)['Historico'].sum()
