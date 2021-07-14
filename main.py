@@ -17,7 +17,7 @@ def profissao(servico):
 
 
 def quote(informacao):
-    return '"{}"'.format(informacao)
+    return '\"' + informacao + '\"'
 
 
 pacientes = read_csv('PACIENTE_original.csv', sep=';', encoding='latin-1', low_memory=False)
@@ -50,7 +50,9 @@ pacientes = pacientes.rename(columns={'CodPaciente': 'id_paciente_dermacapelli',
                                       'DtEntrada': 'data_cadastro',
                                       'Profissao': 'profissao'})
 
-for q in ['nome', 'data_cadastro', 'CodMedico', 'sexo', 'cel', 'profissao', 'nascimento', 'ucase_nome', 'status_p']:
-    pacientes[q] = pacientes[q].apply(quote)
+
+q = ['nome', 'data_cadastro', 'CodMedico', 'sexo', 'cel', 'profissao', 'nascimento', 'ucase_nome', 'status_p']
+pacientes[q] = pacientes[q].astype(str).apply(quote)
+
 
 pacientes.to_csv('pacientes_dermacapelli.csv', encoding='UTF8', index=False)
