@@ -16,6 +16,10 @@ def profissao(servico):
     return 'Null' if servico == 'nan' else unidecode.unidecode(servico)
 
 
+def quote(informacao):
+    return '"{}"'.format(informacao)
+
+
 pacientes = read_csv('PACIENTE_original.csv', sep=';', encoding='latin-1', low_memory=False)
 pacientes['nascimento'] = pacientes['AnoNascimento'].astype(str) + pacientes['MesDiaNascimento'].astype(str)
 pacientes = pacientes.drop(
@@ -26,7 +30,6 @@ pacientes = pacientes.drop(
      'EspecialidadeFicha', 'Procedencia', 'Medico', 'Pai', 'TipoFone', 'Conjuge', 'ProfConjuge', 'TemLembrete',
      'TemObs', 'Cor', 'EstadoCivil', 'UltimaAlteracao', 'StatusFinanceiro', 'Filler', 'Naturalidade', 'Endereco',
      'Estado', 'Cidade', 'CEP', 'Mae', 'AnoNascimento', 'MesDiaNascimento'], axis=1)
-
 
 pacientes['nascimento'] = pacientes['nascimento'].astype(str).apply(nascimento)
 pacientes['Sexo'] = pacientes['Sexo'].apply(sexo)
@@ -43,7 +46,11 @@ pacientes['ucase_nome'] = pacientes['Nome'].str.upper()
 pacientes = pacientes.rename(columns={'CodPaciente': 'id_paciente_dermacapelli',
                                       'Nome': 'nome',
                                       'Fone': 'cel',
+                                      'Sexo': 'sexo',
                                       'DtEntrada': 'data_cadastro',
                                       'Profissao': 'profissao'})
+
+for q in ['nome', 'data_cadastro', 'CodMedico', 'sexo', 'cel', 'profissao', 'nascimento', 'ucase_nome', 'status_p']:
+    pacientes[q] = pacientes[q].apply(quote)
 
 pacientes.to_csv('pacientes_dermacapelli.csv', encoding='UTF8', index=False)
