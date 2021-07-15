@@ -13,11 +13,19 @@ def profissao(servico):
 
 
 def quote(informacao):
-    return '\"' + informacao + '\"'
+    return "\'" + informacao + "\'"
 
 
 def sexo(indefinido):
     return 'MASCULINO' if indefinido == 'M' else 'FEMININO'
+
+
+def tel(telefone):
+    return ''.join(re.findall('\d+', telefone)) if telefone != 'nan' else '99999999'
+
+
+def remover_lixo(info: str):
+    return info.replace("'", '')
 
 
 pacientes = read_csv('PACIENTE_original.csv', sep=';', encoding='latin-1', low_memory=False)
@@ -25,7 +33,7 @@ pacientes['nascimento'] = pacientes['AnoNascimento'].astype(str) + pacientes['Me
 pacientes = pacientes.drop(
     ['FotoFicha', 'EnviarMalaDireta', 'NomeUsrMedico', 'FoneIndicacao', 'CodConvenio', 'ValorPagar',
      'ValorPago', 'DtUltimaConsulta', 'DtRetorno', 'HoraMarcada', 'NVisitas', 'UltimoAtendimento',
-     'FoneAdicional', 'TipoFoneAdicional', 'RecadoCom', 'PacienteInternado',
+     'FoneAdicional', 'CodMedico', 'TipoFoneAdicional', 'RecadoCom', 'PacienteInternado',
      'TemFoto', 'NomeFonetico', 'TemInfoClinicas', 'CodigoPrimeiroMedico',
      'EspecialidadeFicha', 'Procedencia', 'Medico', 'Pai', 'TipoFone', 'Conjuge', 'ProfConjuge', 'TemLembrete',
      'TemObs', 'Cor', 'EstadoCivil', 'UltimaAlteracao', 'StatusFinanceiro', 'Filler', 'Naturalidade', 'Endereco',
@@ -33,7 +41,7 @@ pacientes = pacientes.drop(
 
 pacientes['nascimento'] = pacientes['nascimento'].astype(str).apply(nascimento)
 pacientes['Sexo'] = pacientes['Sexo'].apply(sexo)
-pacientes['Fone'] = pacientes['Fone'].astype(str).apply(lambda tel: ''.join(re.findall('\d+', tel)))
+pacientes['Fone'] = pacientes['Fone'].astype(str).apply(tel)
 pacientes['DtEntrada'] = pacientes['DtEntrada'].astype(str).apply(nascimento)
 pacientes['Profissao'] = pacientes['Profissao'].astype(str).apply(profissao)
 pacientes['status_p'] = 'ACTIVED'
@@ -41,6 +49,7 @@ pacientes['flagagenda'] = 'False'
 pacientes['compartilhar_prontuario'] = 'False'
 pacientes['config_cadastro_completo'] = 'Null'
 pacientes['cpf_obrigatorio'] = 'False'
+pacientes['Nome'] = pacientes['Nome'].astype(str).apply(remover_lixo)
 pacientes['ucase_nome'] = pacientes['Nome'].str.upper()
 
 pacientes = pacientes.rename(columns={'CodPaciente': 'id_paciente_dermacapelli',
@@ -50,9 +59,7 @@ pacientes = pacientes.rename(columns={'CodPaciente': 'id_paciente_dermacapelli',
                                       'DtEntrada': 'data_cadastro',
                                       'Profissao': 'profissao'})
 
-
-q = ['nome', 'data_cadastro', 'CodMedico', 'sexo', 'cel', 'profissao', 'nascimento', 'ucase_nome', 'status_p']
+q = ['nome', 'data_cadastro', 'sexo', 'cel', 'profissao', 'nascimento', 'ucase_nome', 'status_p']
 pacientes[q] = pacientes[q].astype(str).apply(quote)
-
 
 pacientes.to_csv('paciente_dermacapelli.csv', encoding='UTF8', index=False)
