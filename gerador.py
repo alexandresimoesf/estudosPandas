@@ -4,8 +4,10 @@ import csv
 # y = ['id_paciente_dermacapelli', 'cel', 'data_cadastro', 'nascimento', 'nome', 'profissao', 'sexo', 'status_P', 'tel', 'flagagenda', 'compartilhar_prontuario', 'config_cadastro_completo', 'cpf_obrigatorio', 'ucase_nome']
 # print(list(set(x) - set(y)))
 
-arquivo = 'prontuario_dermacapelli.csv'
+arquivo = 'prontuarioPermissao_dermacapelli.csv'
 tabela = arquivo.split('_')[0]
+if tabela == 'prontuarioPermissao':
+    tabela = 'permissao_prontuario_clinica'
 arquivo_final = tabela + '.sql'
 with open(arquivo, 'r', encoding='utf-8') as f:
     linhas = (list(csv.reader(f)))

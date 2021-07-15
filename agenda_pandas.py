@@ -114,7 +114,7 @@ prontuario_csv.to_csv('prontuario_dermacapelli.csv', encoding='UTF8', index=Fals
 
 prontuarioPermissao_csv = DataFrame()
 prontuarioPermissao_csv['id_paciente_dermacapelli'] = agenda['id_paciente_dermacapelli']
-prontuarioPermissao_csv['modificado_em'] = 'SELECT now()'
+prontuarioPermissao_csv['modificado_em'] = '(SELECT now())'
 prontuarioPermissao_csv['fk_medico_id'] = agenda['fk_medico_id'].values
 prontuarioPermissao_csv['fk_prontuario_id'] = agenda['id_paciente_dermacapelli'].apply(prontuario)
 prontuarioPermissao_csv['fk_rede_clinica_id'] = '(SELECT fk_rede_clinica_id FROM public.clinica WHERE id = (83))'
