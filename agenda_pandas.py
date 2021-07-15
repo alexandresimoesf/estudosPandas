@@ -2,21 +2,22 @@ from pandas import read_csv, set_option, Grouper, DataFrame
 import numpy as np
 import unidecode
 
-# https://queirozf.com/entries/pandas-dataframe-groupby-examples
-# INSERT INTO public.agenda(data_agendada, data_agendada_timestamp, horario, descricao, etiqueta, status, status_consulta, confirm_consulta, codigo_saida, data_solicitacao,tipo_atendimento, is_encaixe, data_atendimento, data_finalizacao,paciente_online, fk_clinica_id, fk_medico_id,fk_paciente_id, fk_especializacao_id, fk_forma_atendimento_id) VALUES ('2008-12-08', '2008-12-08 08:00:00', '08:00', '', 'consulta', 1, 'AGUARDANDO', 'CONFIRMADO', 'RETORNO', '2008-12-08', 'CONSULTA', false, '2008-12-08', null, false, 83, 211, (SELECT id FROM public.paciente where paciente.id_paciente_dermacapelli = 1), 801, 230);
-# INSERT INTO public.prontuario(datacriacao, fk_paciente_id) SELECT now(), id from public.paciente where paciente.id_paciente_dermacapelli = 1;
-# INSERT INTO public.permissao_prontuario_clinica(modificado_em, fk_medico_id, fk_prontuario_id, fk_rede_clinica_id, escrita, leitura) VALUES (now(), 211, (SELECT id FROM public.prontuario WHERE fk_paciente_id = (SELECT id FROM paciente where paciente.id_paciente_dermacapelli=1 LIMIT 1)), (SELECT fk_rede_clinica_id FROM public.clinica WHERE id = (83)), false, false);
 
 set_option('display.max_rows', 500)
 set_option('display.max_columns', 500)
 set_option('display.width', 2000)
 
-medicos_cod: dict = {20: 203, 25: 210,
-                     26: 212, 2: 211}
+medicos_cod: dict = {20: 203,
+                     25: 210,
+                     26: 212,
+                     2: 211}
 
-especializacao: dict = {203: 776, 210: 798,
-                        213: 806, 212: 804,
-                        214: 808, 211: 801}
+especializacao: dict = {203: 776,
+                        210: 798,
+                        213: 806,
+                        212: 804,
+                        214: 808,
+                        211: 801}
 
 
 def sql_foreing_key_paciente(key):
@@ -49,6 +50,11 @@ def historico(hist):
 
 def prontuario(key):
     return '(SELECT id FROM public.prontuario WHERE fk_paciente_id = (SELECT id FROM paciente where paciente.id_paciente_dermacapelli={} LIMIT 1)'.format(key)
+
+
+def filtro(anamnese_frase: str):
+    anamnese_frase = anamnese_frase.replace('<CRLF>', ' ')
+    return unidecode.unidecode(anamnese_frase)
 
 
 agenda = read_csv('HISTORIC_original.csv', sep=';', encoding='latin-1', low_memory=False)
@@ -114,4 +120,13 @@ q_agenda = ['data_agendada', 'data_agendada_timestamp', 'horario', 'descricao', 
 # prontuarioPermissao_csv.to_csv('prontuarioPermissao_dermacapelli.csv', encoding='UTF8', index=False)
 
 
-# anamnese = agenda.groupby(['id_paciente_dermacapelli', 'data_agendada', 'fk_medico_id'], as_index=False)['Historico'].sum()
+anamnese = agenda.groupby(['id_paciente_dermacapelli', 'data_agendada', 'fk_medico_id'], as_index=False)['Historico'].sum()
+anamnese['checksum'] = 'null'
+anamnese['fk_prontuario_id'] = agenda['id_paciente_dermacapelli'].apply(prontuario)
+anamnese = anamnese.rename(columns={'Historico': 'anamnese', 'data_agendada': 'datacriacao'})
+anamnese = anamnese.drop_duplicates(subset=['id_paciente_dermacapelli'])
+anamnese = anamnese.drop(['id_paciente_dermacapelli'], axis=1)
+anamnese['anamnese'] = anamnese['anamnese'].astype(str).apply(filtro)
+anamnese['anamnese'] = anamnese['anamnese'].apply(quote)
+print(anamnese.columns)
+# anamnese.to_csv('anamnese.csv', encoding='UTF8', index=False)
