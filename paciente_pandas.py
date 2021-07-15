@@ -28,7 +28,7 @@ def remover_lixo(info: str):
     return info.replace("'", '')
 
 
-pacientes = read_csv('PACIENTE_original.csv', sep=';', encoding='latin-1', low_memory=False)
+pacientes = read_csv('PACIENTE.csv', sep=';', encoding='latin-1', low_memory=False)
 pacientes['nascimento'] = pacientes['AnoNascimento'].astype(str) + pacientes['MesDiaNascimento'].astype(str)
 pacientes = pacientes.drop(
     ['FotoFicha', 'EnviarMalaDireta', 'NomeUsrMedico', 'FoneIndicacao', 'CodConvenio', 'ValorPagar',

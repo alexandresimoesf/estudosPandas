@@ -61,7 +61,7 @@ def filtro(anamnese_frase: str):
     return anamnese_frase
 
 
-agenda = read_csv('HISTORIC_original.csv', sep=';', encoding='latin-1', low_memory=False)
+agenda = read_csv('HISTORIC.csv', sep=';', encoding='latin-1', low_memory=False)
 remover = ['Unnamed: 8', 'CodigoHistorico', 'PosicaoAtributo', 'Unnamed: 9', 'Observacao']
 agenda = agenda.drop(remover, axis=1)
 agenda = agenda.dropna(subset=['CodPaciente'])
