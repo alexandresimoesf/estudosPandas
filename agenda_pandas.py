@@ -1,6 +1,5 @@
 from pandas import read_csv, set_option, Grouper, DataFrame
 import numpy as np
-import unidecode
 
 
 set_option('display.max_rows', 500)
@@ -45,7 +44,7 @@ def nascimento(data):
 
 
 def historico(hist):
-    return ' ' if hist == 'nan' else hist
+    return ' ' if hist == 'nan' else hist.replace("\'", " ")
 
 
 def prontuario(key):
@@ -58,7 +57,8 @@ def prontuario_paciente_fk(key):
 
 def filtro(anamnese_frase: str):
     anamnese_frase = anamnese_frase.replace('<CRLF>', ' ')
-    return unidecode.unidecode(anamnese_frase)
+    anamnese_frase = anamnese_frase.replace("\'", '')
+    return anamnese_frase
 
 
 agenda = read_csv('HISTORIC_original.csv', sep=';', encoding='latin-1', low_memory=False)
@@ -126,12 +126,16 @@ prontuarioPermissao_csv = prontuarioPermissao_csv.drop(['id_paciente_dermacapell
 prontuarioPermissao_csv.to_csv('prontuarioPermissao_dermacapelli.csv', encoding='UTF8', index=False)
 
 
-# anamnese = agenda.groupby(['id_paciente_dermacapelli', 'data_agendada', 'fk_medico_id'], as_index=False)['Historico'].sum()
-# anamnese['checksum'] = 'null'
-# anamnese['fk_prontuario_id'] = anamnese['id_paciente_dermacapelli'].apply(prontuario)
-# anamnese = anamnese.rename(columns={'Historico': 'anamnese', 'data_agendada': 'datacriacao'})
-# anamnese = anamnese.drop(['id_paciente_dermacapelli'], axis=1)
-# anamnese['anamnese'] = anamnese['anamnese'].astype(str).apply(filtro)
-# anamnese['anamnese'] = anamnese['anamnese'].apply(quote)
-# anamnese['datacriacao'] = anamnese['datacriacao'] + ' 08:00:00'
-# anamnese.to_csv('anamnese_dermacapelli.csv', encoding='UTF8', index=False)
+anamnese = agenda.groupby(['id_paciente_dermacapelli', 'data_agendada', 'fk_medico_id'], as_index=False)['Historico'].sum()
+anamnese['checksum'] = 'null'
+anamnese['fk_prontuario_id'] = anamnese['id_paciente_dermacapelli'].apply(prontuario)
+anamnese = anamnese.rename(columns={'Historico': 'anamnese',
+                                    'data_agendada': 'datacriacao',
+                                    'fk_medico_id': 'fk_responsavel_id'})
+
+anamnese = anamnese.drop(['id_paciente_dermacapelli'], axis=1)
+anamnese['anamnese'] = anamnese['anamnese'].astype(str).apply(filtro)
+anamnese['anamnese'] = anamnese['anamnese'].apply(quote)
+anamnese['datacriacao'] = anamnese['datacriacao'] + ' 08:00:00'
+anamnese['datacriacao'] = anamnese['datacriacao'].apply(quote)
+anamnese.to_csv('anamnese_dermacapelli.csv', encoding='UTF8', index=False)
