@@ -1,6 +1,6 @@
 from pandas import read_csv, set_option, Grouper, DataFrame
 import numpy as np
-
+import gerador
 
 set_option('display.max_rows', 500)
 set_option('display.max_columns', 500)
@@ -100,7 +100,7 @@ agenda_csv = agenda
 agenda_csv = agenda_csv.drop(['Atributo', 'id_paciente_dermacapelli', 'Historico'], axis=1)
 agenda_csv = agenda_csv.drop_duplicates(subset=['data_agendada'])
 agenda_csv[q_agenda] = agenda_csv[q_agenda].astype(str).apply(quote)
-agenda_csv.to_csv('agenda_dermacapelli.csv', encoding='UTF8', index=False)
+agenda_csv.to_csv('csv/agenda_dermacapelli.csv', encoding='UTF8', index=False)
 
 
 prontuario_csv = DataFrame()
@@ -109,7 +109,7 @@ prontuario_csv['id_paciente_dermacapelli'] = prontuario_csv['id_paciente_dermaca
 prontuario_csv['datacriacao'] = '(SELECT now())'
 prontuario_csv = prontuario_csv.drop_duplicates(subset=['id_paciente_dermacapelli'])
 prontuario_csv = prontuario_csv.rename(columns={'id_paciente_dermacapelli': 'fk_paciente_id'})
-prontuario_csv.to_csv('prontuario_dermacapelli.csv', encoding='UTF8', index=False)
+prontuario_csv.to_csv('csv/prontuario_dermacapelli.csv', encoding='UTF8', index=False)
 
 
 prontuarioPermissao_csv = DataFrame()
@@ -123,7 +123,7 @@ prontuarioPermissao_csv['leitura'] = 'false'
 
 prontuarioPermissao_csv = prontuarioPermissao_csv.drop_duplicates(subset=['id_paciente_dermacapelli'])
 prontuarioPermissao_csv = prontuarioPermissao_csv.drop(['id_paciente_dermacapelli'], axis=1)
-prontuarioPermissao_csv.to_csv('prontuarioPermissao_dermacapelli.csv', encoding='UTF8', index=False)
+prontuarioPermissao_csv.to_csv('csv/prontuarioPermissao_dermacapelli.csv', encoding='UTF8', index=False)
 
 
 anamnese = agenda.groupby(['id_paciente_dermacapelli', 'data_agendada', 'fk_medico_id'], as_index=False)['Historico'].sum()
@@ -138,4 +138,6 @@ anamnese['anamnese'] = anamnese['anamnese'].astype(str).apply(filtro)
 anamnese['anamnese'] = anamnese['anamnese'].apply(quote)
 anamnese['datacriacao'] = anamnese['datacriacao'] + ' 08:00:00'
 anamnese['datacriacao'] = anamnese['datacriacao'].apply(quote)
-anamnese.to_csv('anamnese_dermacapelli.csv', encoding='UTF8', index=False)
+anamnese.to_csv('csv/anamnese_dermacapelli.csv', encoding='UTF8', index=False)
+
+gerador.gerar_sql()

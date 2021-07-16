@@ -62,4 +62,4 @@ pacientes = pacientes.rename(columns={'CodPaciente': 'id_paciente_dermacapelli',
 q = ['nome', 'data_cadastro', 'sexo', 'cel', 'profissao', 'nascimento', 'ucase_nome', 'status_p']
 pacientes[q] = pacientes[q].astype(str).apply(quote)
 
-pacientes.to_csv('paciente_dermacapelli.csv', encoding='UTF8', index=False)
+pacientes.to_csv('csv/paciente_dermacapelli.csv', encoding='UTF8', index=False)
