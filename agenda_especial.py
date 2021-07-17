@@ -56,7 +56,7 @@ agenda_do_medico['horario'] = agenda_do_medico['Hora'].astype(str) + ':00'
 agenda_do_medico['Hora'] = agenda_do_medico['Hora'].astype(str).apply(horario)
 agenda_do_medico['data_agendada_timestamp'] = agenda_do_medico['data_agendada'] + ' ' + agenda_do_medico['Hora'].astype(str) + ':00'
 agenda_do_medico = agenda_do_medico.drop(['Data', 'Hora'], axis=1)
-agenda_do_medico = agenda_do_medico.rename(columns={'CodPaciente':'fk_paciente_id'})
+agenda_do_medico = agenda_do_medico.rename(columns={'CodPaciente': 'fk_paciente_id'})
 agenda_do_medico['fk_paciente_id'] = agenda_do_medico['fk_paciente_id'].apply(sql_foreing_key_paciente)
 agenda_do_medico[['horario', 'data_agendada', 'data_agendada_timestamp', 'data_solicitacao']] = agenda_do_medico[['horario', 'data_agendada', 'data_agendada_timestamp', 'data_solicitacao']].apply(quote)
 agenda_do_medico.to_csv('csv/leonardo_agenda.csv', index=False)
