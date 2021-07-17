@@ -97,8 +97,9 @@ q_agenda = ['data_agendada', 'data_agendada_timestamp', 'horario', 'descricao', 
 
 
 agenda_csv = agenda
-agenda_csv = agenda_csv.drop(['Atributo', 'id_paciente_dermacapelli', 'Historico'], axis=1)
-agenda_csv = agenda_csv.drop_duplicates(subset=['data_agendada'])
+agenda_csv = agenda_csv.groupby(['id_paciente_dermacapelli', 'data_agendada'], as_index=False).first()
+agenda_csv = agenda_csv.reset_index()
+agenda_csv = agenda_csv.drop(['Atributo', 'id_paciente_dermacapelli', 'Historico', 'index'], axis=1)
 agenda_csv[q_agenda] = agenda_csv[q_agenda].astype(str).apply(quote)
 agenda_csv.to_csv('csv/agenda_dermacapelli.csv', encoding='UTF8', index=False)
 
@@ -116,12 +117,15 @@ prontuarioPermissao_csv = DataFrame()
 prontuarioPermissao_csv['id_paciente_dermacapelli'] = agenda['id_paciente_dermacapelli']
 prontuarioPermissao_csv['modificado_em'] = '(SELECT now())'
 prontuarioPermissao_csv['fk_medico_id'] = agenda['fk_medico_id'].values
+
 prontuarioPermissao_csv['fk_prontuario_id'] = agenda['id_paciente_dermacapelli'].apply(prontuario)
 prontuarioPermissao_csv['fk_rede_clinica_id'] = '(SELECT fk_rede_clinica_id FROM public.clinica WHERE id = (83))'
 prontuarioPermissao_csv['escrita'] = 'false'
 prontuarioPermissao_csv['leitura'] = 'false'
 
-prontuarioPermissao_csv = prontuarioPermissao_csv.drop_duplicates(subset=['id_paciente_dermacapelli'])
+prontuarioPermissao_csv = prontuarioPermissao_csv.groupby(['id_paciente_dermacapelli', 'fk_medico_id']).first()
+prontuarioPermissao_csv = prontuarioPermissao_csv.reset_index()
+# prontuarioPermissao_csv = prontuarioPermissao_csv.drop_duplicates(subset=['id_paciente_dermacapelli'])
 prontuarioPermissao_csv = prontuarioPermissao_csv.drop(['id_paciente_dermacapelli'], axis=1)
 prontuarioPermissao_csv.to_csv('csv/prontuarioPermissao_dermacapelli.csv', encoding='UTF8', index=False)
 
