@@ -20,4 +20,4 @@ def gerar_sql():
                 for i in linhas[1:]:
                     print(sql.format(*i), file=arquivo_sql)
 
-# gerar_sql()
+gerar_sql()

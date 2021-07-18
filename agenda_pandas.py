@@ -20,11 +20,11 @@ especializacao: dict = {203: 776,
 
 
 def sql_foreing_key_paciente(key):
-    return '(SELECT id FROM public.paciente where paciente.id_paciente_dermacapelli = {})'.format(key)
+    return '(SELECT id FROM public.paciente where paciente.id_paciente_dermacapelli = {} LIMIT 1)'.format(key)
 
 
 def sql_prontuario_fk(key):
-    return '(id from public.paciente where paciente.id_paciente_dermacapelli = {})'.format(key)
+    return '(id from public.paciente where paciente.id_paciente_dermacapelli = {} LIMIT 1)'.format(key)
 
 
 def quote(informacao):
@@ -48,11 +48,11 @@ def historico(hist):
 
 
 def prontuario(key):
-    return '(SELECT id FROM public.prontuario WHERE fk_paciente_id = (SELECT id FROM paciente where paciente.id_paciente_dermacapelli={} LIMIT 1))'.format(key)
+    return '(SELECT id FROM public.prontuario WHERE fk_paciente_id = (SELECT id FROM paciente where paciente.id_paciente_dermacapelli={} LIMIT 1) LIMIT 1)'.format(key)
 
 
 def prontuario_paciente_fk(key):
-    return '(SELECT id FROM public.paciente WHERE paciente.id_paciente_dermacapelli = {})'.format(key)
+    return '(SELECT id FROM public.paciente WHERE paciente.id_paciente_dermacapelli = {} LIMIT 1)'.format(key)
 
 
 def filtro(anamnese_frase: str):
