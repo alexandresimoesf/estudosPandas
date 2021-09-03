@@ -2,9 +2,8 @@ import psycopg2
 
 con = psycopg2.connect(host='localhost', database='doctor247', user='postgres', password='123456789')
 cur = con.cursor()
-
-# 'agenda.sql', 'prontuario.sql', 'prontuarioPermissao.sql',
-for arquivo in ['paciente.sql', 'agenda_ana.sql',
+# paciente, agenda, prontuario, prontuario permissao, anamnese
+for arquivo in ['paciente.sql', 'agenda_ana.sql', 'agenda.sql', 'prontuario.sql', 'prontuarioPermissao.sql',
                 'agenda_melissa.sql', 'agenda_sofia.sql', 'agenda_leonardo.sql',
                 'prontuario_ana.sql', 'prontuario_melissa.sql', 'prontuario_sofia.sql', 'prontuario_leonardo.sql',
                 'prontuarioPermissao_ana.sql', 'prontuarioPermissao_melissa.sql', 'prontuarioPermissao_sofia.sql',

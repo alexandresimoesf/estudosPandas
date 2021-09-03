@@ -6,7 +6,7 @@ def gerar_sql():
     for arq in os.listdir('csv'):
         if len(arq.split('_')) > 2:
             tabela = arq.split('_')[1]
-            arquivo_final = 'sql/' + tabela + '_' +arq.split('_')[0] + '.sql'
+            arquivo_final = 'sql/' + tabela + '_' + arq.split('_')[0] + '.sql'
         else:
             tabela = arq.split('_')[0]
             arquivo_final = 'sql/' + tabela + '.sql'
@@ -20,4 +20,4 @@ def gerar_sql():
                 for i in linhas[1:]:
                     print(sql.format(*i), file=arquivo_sql)
 
-gerar_sql()
+# gerar_sql()
