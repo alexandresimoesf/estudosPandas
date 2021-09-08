@@ -4,11 +4,7 @@ from pandas import read_csv, set_option, DataFrame
 
 # select * from medico where id in (203, 210, 211, 212)
 
-# 203	"leonardo Spagnol Abraham"
-# 210	"Sofia Sales"
-# 212	"Ana Acioli de Queiroz "
-# 211	"Melissa Chaves Azevedo e Silva"
-import gerador
+# import gerador
 
 set_option('display.max_rows', 500)
 set_option('display.max_columns', 500)
@@ -32,14 +28,20 @@ def quote(informacao):
 
 
 def horario(h):
-    return '08:00' if 'M' in h or 'T' in h else h
+    if 'M' in h or 'T' in h:
+        return '08:00'
+    return h
 
 
 def prontuario(key):
     return '(SELECT id FROM public.prontuario WHERE fk_paciente_id = {} LIMIT 1)'.format(key)
 
+# 203 - 776	"leonardo Spagnol Abraham"
+# 210 - 798	"Sofia Sales"
+# 212 - 804	"Ana Acioli de Queiroz "
+# 211 - 801	"Melissa Chaves Azevedo e Silva"
 
-medico_file = 'MELISSA'
+medico_file = 'LEONARDO'
 agenda_do_medico = read_csv('%s.csv' % medico_file, sep=';', encoding='latin-1', low_memory=False)
 
 usando = ['Data', 'Hora', 'CodPaciente']
@@ -62,15 +64,16 @@ agenda_do_medico['data_finalizacao'] = 'null'
 agenda_do_medico['responsavel_recepcao'] = "''"
 agenda_do_medico['paciente_online'] = 'false'
 agenda_do_medico['fk_clinica_id'] = 83
-agenda_do_medico['fk_especializacao_id'] = 801
+agenda_do_medico['fk_especializacao_id'] = 776
 agenda_do_medico['fk_forma_atendimento_id'] = 230
-agenda_do_medico['fk_medico_id'] = 211
+agenda_do_medico['fk_medico_id'] = 203
 agenda_do_medico = agenda_do_medico.dropna(subset=['Data', 'CodPaciente'])
 agenda_do_medico['Data'] = agenda_do_medico['Data'].astype(str).apply(formatar_data)
 agenda_do_medico['CodPaciente'] = agenda_do_medico['CodPaciente'].astype(int)
 agenda_do_medico['data_agendada'] = agenda_do_medico['Data'].astype(str)
 agenda_do_medico['data_solicitacao'] = agenda_do_medico['data_agendada']
 agenda_do_medico['horario'] = agenda_do_medico['Hora'].astype(str) + ':00'
+agenda_do_medico['horario'] = agenda_do_medico['horario'].apply(horario)
 agenda_do_medico['Hora'] = agenda_do_medico['Hora'].astype(str).apply(horario)
 agenda_do_medico['data_agendada_timestamp'] = agenda_do_medico['data_agendada'] + ' ' + agenda_do_medico['Hora'].astype(str) + ':00'
 agenda_do_medico = agenda_do_medico.drop(['Data', 'Hora'], axis=1)
@@ -99,6 +102,7 @@ prontuario_csv = prontuario_csv.dropna(subset=['CodPaciente'])
 prontuario_csv['CodPaciente'] = prontuario_csv['CodPaciente'].astype(int)
 prontuario_csv = prontuario_csv.drop_duplicates(subset=['CodPaciente'])
 prontuario_csv['CodPaciente'] = prontuario_csv['CodPaciente'].apply(prontuario_paciente_fk)
+prontuario_csv = prontuario_csv.rename(columns={'CodPaciente': 'fk_paciente_id'})
 prontuario_csv['datacriacao'] = '(SELECT now())'
 prontuario_csv.to_csv('csv/%s_prontuario_dermacapelli.csv' % medico_file.lower(), encoding='UTF8', index=False)
 # prontuario_csv = DataFrame()
@@ -130,10 +134,11 @@ prontuarioPermissao_csv['CodPaciente'] = prontuarioPermissao_csv['CodPaciente'].
 prontuarioPermissao_csv['modificado_em'] = '(SELECT now())'
 prontuarioPermissao_csv['fk_medico_id'] = 203
 prontuarioPermissao_csv['fk_prontuario_id'] = prontuarioPermissao_csv['CodPaciente'].apply(prontuario)
-prontuarioPermissao_csv['fk_rede_clinica_id'] = '(SELECT fk_rede_clinica_id FROM public.clinica WHERE id = (83))'
+prontuarioPermissao_csv['fk_rede_clinica_id'] = '(SELECT fk_rede_clinica_id FROM public.clinica WHERE id = (83) LIMIT 1)'
 prontuarioPermissao_csv['escrita'] = 'false'
 prontuarioPermissao_csv['leitura'] = 'false'
 prontuarioPermissao_csv = prontuarioPermissao_csv.rename(columns={'CodPaciente': 'fk_paciente_id'})
+prontuarioPermissao_csv = prontuarioPermissao_csv.drop(['fk_paciente_id'], axis=1)
 prontuarioPermissao_csv.to_csv('csv/%s_prontuarioPermissao_dermacapelli.csv' % medico_file.lower(), encoding='UTF8', index=False)
 
 # gerador.gerar_sql()

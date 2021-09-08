@@ -1,6 +1,6 @@
 from pandas import read_csv, set_option, Grouper, DataFrame
 import numpy as np
-import gerador
+# import gerador
 
 set_option('display.max_rows', 500)
 set_option('display.max_columns', 500)
@@ -144,4 +144,4 @@ anamnese['datacriacao'] = anamnese['datacriacao'] + ' 08:00:00'
 anamnese['datacriacao'] = anamnese['datacriacao'].apply(quote)
 anamnese.to_csv('csv/anamnese_dermacapelli.csv', encoding='UTF8', index=False)
 
-gerador.gerar_sql()
+# gerador.gerar_sql()
